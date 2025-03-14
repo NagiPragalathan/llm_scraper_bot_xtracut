@@ -56,5 +56,3 @@ def get_response(user_input: str, session_id: str, stream: bool = False, message
     
     if not stream:
         return response.get("output_text", "") if isinstance(response, dict) else str(response)
-    
-    
