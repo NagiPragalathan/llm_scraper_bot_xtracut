@@ -1,35 +1,71 @@
-from typing import Any
-from langchain.memory import ConversationBufferMemory
+from typing import Any, Dict, List
 from langchain.prompts import ChatPromptTemplate
-from langchain_ollama import ChatOllama
-from langchain.memory import ConversationBufferMemory
 
-def get_memory() -> ConversationBufferMemory:
-    return ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+class ChatHistory:
+    """Manages chat messages with session-based storage."""
+    
+    _store: Dict[str, List[Dict[str, str]]] = {}
 
-class ChatHelper:
-    def __init__(self, system_prompt: str, human_prompt: str):
-        
-        self.prompt = ChatPromptTemplate.from_messages([
-            ("system", system_prompt),
-            ("system", "Previous conversation:\n{chat_history}"),
-            ("human", human_prompt),
-        ])
+    def __init__(self, session_id: str):
+        self.session_id = session_id
+        if session_id not in self._store:
+            self._store[session_id] = []
 
     def add_user_message(self, message: str):
-        self.memory.add_user_message(message)
+        """Stores user message under the session."""
+        self._store[self.session_id].append({"role": "user", "content": message})
 
     def add_assistant_message(self, message: str):
-        self.memory.add_assistant_message(message)
-        
-    def create_or_get_memory(self, memory_key: str = "chat_history") -> ConversationBufferMemory:
-        if not hasattr(self, '_memory'):
-            self._memory = ConversationBufferMemory(
-                memory_key=memory_key,
-                return_messages=True,
-                input_key="input",
-            )
-        return self._memory
-        
-    def get_memory_string(self, memory_key: str = "chat_history") -> str:
-        return self.create_memory(memory_key).buffer_as_str
+        """Stores assistant message under the session."""
+        self._store[self.session_id].append({"role": "assistant", "content": message})
+
+    def get_chat_history(self) -> List[Dict[str, str]]:
+        """Retrieves chat history for the session."""
+        return self._store.get(self.session_id, [])
+    
+    
+
+    @classmethod
+    def clear_session(cls, session_id: str):
+        """Clears history for a specific session."""
+        if session_id in cls._store:
+            del cls._store[session_id]
+
+    @classmethod
+    def clear_all(cls):
+        """Clears all stored chat histories."""
+        cls._store.clear()
+
+
+class ChatHelper:
+    """Handles chat prompts and memory retrieval."""
+    
+    def __init__(self, system_prompt: str, human_prompt: str):
+        self.system_prompt = system_prompt
+        self.human_prompt = human_prompt
+
+        self.prompt = ChatPromptTemplate.from_messages([
+            ("system", self.system_prompt),
+            ("system", "Previous conversation:\n{chat_history}"),
+            ("human", self.human_prompt),
+        ])
+
+    def get_memory_string(self, session_id: str) -> str:
+        """Returns chat history as a formatted string."""
+        chat_history = ChatHistory(session_id)
+        return "\n".join([f"{msg['role']}: {msg['content']}" for msg in chat_history.get_chat_history()])
+
+    def get_memory_list(self, session_id: str) -> List[Dict[str, str]]:
+        """Returns chat history as a list of messages."""
+        chat_history = ChatHistory(session_id)
+        return chat_history.get_chat_history()
+
+    def add_user_message(self, session_id: str, message: str):
+        """Stores a user message in the session history."""
+        chat_history = ChatHistory(session_id)
+        chat_history.add_user_message(message)
+
+    def add_assistant_message(self, session_id: str, message: str):
+        """Stores an assistant message in the session history."""
+        chat_history = ChatHistory(session_id)
+        chat_history.add_assistant_message(message)
