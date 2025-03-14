@@ -21,7 +21,8 @@ def get_response(user_input: str, session_id: str, stream: bool = False) -> Unio
     vectorstore = get_or_create_vectorstore()
     results = vectorstore.similarity_search(user_input, k=2)
     context = "\n".join([doc.page_content for doc in results])
-    llm = get_llm_model(model_name="deepseek-r1:7b")
+    llm = get_llm_model()
+    # llm = get_llm_model(llm_model="groq", model_name="llama-3.3-70b-versatile", temperature=0.5, api_key="oB")
     chat_helper = ChatHelper(system_prompt=SYSTEM_PROMPT, human_prompt=HUMAN_PROMPT)
     chain = chat_helper.prompt | llm
     
