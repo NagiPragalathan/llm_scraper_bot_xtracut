@@ -31,5 +31,5 @@ while True:
         print("Chatbot: Goodbye!")
         break
     else:
-        response = chain.invoke({"input": usr_input})
+        response = chain.invoke({"input": usr_input}, stream=True)
         print(f"Chatbot: {response}")

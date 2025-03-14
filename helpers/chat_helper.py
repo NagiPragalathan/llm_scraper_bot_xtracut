@@ -13,7 +13,7 @@ class ChatHelper:
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", system_prompt),
             ("system", "Previous conversation:\n{chat_history}"),
-            ("human", "{input}"),
+            ("human", human_prompt),
         ])
 
     def add_user_message(self, message: str):

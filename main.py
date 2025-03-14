@@ -1,3 +1,4 @@
 from handlers.response_handler import get_response
 
-print(get_response("Hello, world!"))
+for chunk in get_response("Hello, world!", stream=True):
+    print(chunk, end="", flush=True)
