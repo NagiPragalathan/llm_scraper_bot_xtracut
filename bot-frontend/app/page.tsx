@@ -85,7 +85,9 @@ export default function Home() {
   const addNewConversation = () => {
     const newId = conversations.length > 0 ? Math.max(...conversations.map(c => c.id)) + 1 : 1;
     const newConversation = { id: newId, name: 'New Chat', messages: [] };
-    setConversations([...conversations, newConversation]);
+    
+    // Add the new conversation at the beginning of the array
+    setConversations([newConversation, ...conversations]);
     setActiveConversation(newId);
   };
 
