@@ -22,12 +22,14 @@ class ChatHelper:
     def add_assistant_message(self, message: str):
         self.memory.add_assistant_message(message)
         
-    def create_memory(self, memory_key: str = "chat_history") -> ConversationBufferMemory:
-        return ConversationBufferMemory(
-            memory_key=memory_key,
-            return_messages=True,
-            input_key="input",
-        )
+    def create_or_get_memory(self, memory_key: str = "chat_history") -> ConversationBufferMemory:
+        if not hasattr(self, '_memory'):
+            self._memory = ConversationBufferMemory(
+                memory_key=memory_key,
+                return_messages=True,
+                input_key="input",
+            )
+        return self._memory
         
     def get_memory_string(self, memory_key: str = "chat_history") -> str:
         return self.create_memory(memory_key).buffer_as_str

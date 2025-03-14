@@ -13,7 +13,7 @@ def get_or_create_vectorstore() -> Chroma:
         print("Loading existing vectorstore...")
         return Chroma(
             persist_directory=PERSIST_DIRECTORY,
-            embedding=embeddings,
+            embedding_function=embeddings,
             collection_name=COLLECTION_NAME
         )
     else:
