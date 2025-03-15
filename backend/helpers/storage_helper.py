@@ -1,12 +1,13 @@
 from langchain_community.vectorstores import Chroma
-from langchain.embeddings import OllamaEmbeddings
+from langchain_ollama import OllamaEmbeddings
+
 import os
 from helpers.scraping_helper import scrape_website
 
 # Define constants
 PERSIST_DIRECTORY = "db"
 COLLECTION_NAME = "srmtrichynew"
-embeddings = OllamaEmbeddings(model="nomic-embed-text", show_progress=True)
+embeddings = OllamaEmbeddings(model="nomic-embed-text")
 
 def get_or_create_vectorstore() -> Chroma:
     if os.path.exists(PERSIST_DIRECTORY) and os.path.exists(f"{PERSIST_DIRECTORY}/chroma.sqlite3"):

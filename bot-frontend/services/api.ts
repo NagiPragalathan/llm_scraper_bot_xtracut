@@ -1,4 +1,4 @@
-import '../utils/polyfills';
+import '@/utils/polyfills';
 
 interface Message {
   id: number;
